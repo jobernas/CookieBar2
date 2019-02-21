@@ -1,6 +1,7 @@
 package org.aviran.cookiebarsample;
 
 import android.os.Bundle;
+import android.support.v4.app.FragmentTransaction;
 import android.support.v7.app.AppCompatActivity;
 import android.view.Gravity;
 import android.view.View;
@@ -143,25 +144,16 @@ public class MainActivity extends AppCompatActivity {
                 }
         });
 
-        Button btnInfiniteView = findViewById(R.id.btn_infinite_duration);
+        Button btnInfiniteView = findViewById(R.id.btn_fragment_dialog);
         btnInfiniteView.setOnClickListener(new View.OnClickListener() {
 
             @Override
             public void onClick(View view) {
 
-                CookieBar.build(MainActivity.this)
-                        .setTitle(R.string.infinite_cookie_title)
-                        .setTitleColor(R.color.yellow)
-                        .setMessage(R.string.infinite_cookie_message)
-                        .setIcon(R.drawable.ic_android_white_48dp)
-                        .setDuration(CookieBar.INFINITE_DURATION)
-                        .setAction(R.string.dismiss, new OnActionClickListener() {
-                            @Override
-                            public void onClick() {
-                                CookieBar.dismiss(MainActivity.this);
-                            }
-                        })
-                        .show();
+                FragmentTransaction ft = MainActivity.this.getSupportFragmentManager().beginTransaction();
+                FullscreenDialog holder = new FullscreenDialog();
+                holder.show(ft, "Dialog");
+
             }
         });
 
