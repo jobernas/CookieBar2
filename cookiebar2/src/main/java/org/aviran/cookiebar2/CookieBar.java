@@ -95,7 +95,7 @@ public class CookieBar {
         for (int i = 0; i < childCount; i++) {
             View child = parent.getChildAt(i);
             if (child instanceof Cookie) {
-                ((Cookie) child).dismiss(new Cookie.CookieBarDismissListener() {
+                ((Cookie) child).dismiss(new CookieBarDismissListener() {
                     @Override
                     public void onDismiss() {
                         parent.addView(cookie);
@@ -251,6 +251,11 @@ public class CookieBar {
             return this;
         }
 
+        public Builder setOnCookieBarDismiss(CookieBarDismissListener onCookieBarDismiss) {
+            params.onCookieBarDismiss = onCookieBarDismiss;
+            return this;
+        }
+
         public CookieBar create() {
             return new CookieBar(context, params);
         }
@@ -284,6 +289,7 @@ public class CookieBar {
         public int animationOutBottom = R.anim.slide_out_to_bottom;
         public CustomViewInitializer viewInitializer;
         public OnActionClickListener onActionClickListener;
+        public CookieBarDismissListener onCookieBarDismiss;
         public AnimatorSet iconAnimator;
     }
 

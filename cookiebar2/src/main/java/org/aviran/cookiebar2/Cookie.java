@@ -9,6 +9,7 @@ import android.support.annotation.Nullable;
 import android.support.v4.content.ContextCompat;
 import android.text.TextUtils;
 import android.util.AttributeSet;
+import android.util.Log;
 import android.view.Gravity;
 import android.view.MotionEvent;
 import android.view.View;
@@ -39,7 +40,7 @@ final class Cookie extends LinearLayout implements View.OnTouchListener {
     private int animationOutBottom;
     private boolean isAutoDismissEnabled;
     private boolean isSwipeable;
-
+    CookieBarDismissListener onDismissListener;
 
     public Cookie(@NonNull final Context context) {
         this(context, null);
@@ -126,6 +127,7 @@ final class Cookie extends LinearLayout implements View.OnTouchListener {
         animationOutBottom = params.animationOutBottom;
         isSwipeable = params.enableSwipeToDismiss;
         isAutoDismissEnabled = params.enableAutoDismiss;
+        onDismissListener = params.onCookieBarDismiss;
 
 
         //Icon
@@ -245,6 +247,7 @@ final class Cookie extends LinearLayout implements View.OnTouchListener {
     }
 
     public void dismiss(final CookieBarDismissListener listener) {
+        onDismissListener.onDismiss();
         if (swipedOut) {
             removeFromParent();
             return;
@@ -348,6 +351,8 @@ final class Cookie extends LinearLayout implements View.OnTouchListener {
 
             @Override
             public void onAnimationEnd(Animator animation) {
+                // Execute Dismiss on exit
+                onDismissListener.onDismiss();
                 removeFromParent();
             }
 
@@ -361,9 +366,5 @@ final class Cookie extends LinearLayout implements View.OnTouchListener {
                 // no implementation
             }
         };
-    }
-
-    public interface CookieBarDismissListener {
-        void onDismiss();
     }
 }
