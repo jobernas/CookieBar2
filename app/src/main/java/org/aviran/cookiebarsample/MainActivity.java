@@ -3,12 +3,14 @@ package org.aviran.cookiebarsample;
 import android.os.Bundle;
 import android.support.v4.app.FragmentTransaction;
 import android.support.v7.app.AppCompatActivity;
+import android.util.Log;
 import android.view.Gravity;
 import android.view.View;
 import android.widget.Button;
 import android.widget.Toast;
 
 import org.aviran.cookiebar2.CookieBar;
+import org.aviran.cookiebar2.CookieBarDismissListener;
 import org.aviran.cookiebar2.OnActionClickListener;
 
 public class MainActivity extends AppCompatActivity {
@@ -137,9 +139,15 @@ public class MainActivity extends AppCompatActivity {
                         })
                         .setTitle(R.string.custom_view_cookie_title)
                         .setMessage(R.string.custom_view_cookie_message)
-                        .setEnableAutoDismiss(false)
-                        .setSwipeToDismiss(false)
+                        .setEnableAutoDismiss(true)
+                        .setSwipeToDismiss(true)
                         .setCookiePosition(Gravity.BOTTOM)
+                        .setOnCookieBarDismiss(new CookieBarDismissListener() {
+                            @Override
+                            public void onDismiss() {
+                                Log.d("Testing", "Dismiss Executed!!!");
+                            }
+                        })
                         .show();
                 }
         });
