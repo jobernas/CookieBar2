@@ -60,7 +60,7 @@ public class CookieBar {
     private void show() {
         if (cookieView != null) {
 
-            if (this.holder != null) {
+            if (this.holder != null && this.holder.getView() != null) {
                 // Load
                 final ViewGroup content = (ViewGroup) this.holder.getView().getParent();
                 if (cookieView.getParent() == null) {
