@@ -48,7 +48,11 @@ public class CookieBar {
     private CookieBar(Activity activity, Fragment holder, Params params) {
         this.activity = activity;
         this.holder = holder;
-        this.context = activity.getApplicationContext();
+        if (activity != null) {
+            this.context = activity.getApplicationContext();
+        } else {
+            this.context = null;
+        }
 
         if (params == null || context == null) {
             // since params is null, this CookieBar object can only be used to dismiss
