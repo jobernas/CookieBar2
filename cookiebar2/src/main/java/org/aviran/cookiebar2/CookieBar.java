@@ -3,6 +3,7 @@ package org.aviran.cookiebar2;
 import android.animation.AnimatorInflater;
 import android.animation.AnimatorSet;
 import android.app.Activity;
+import android.content.Context;
 import android.support.annotation.AnimRes;
 import android.support.annotation.AnimatorRes;
 import android.support.annotation.ColorRes;
@@ -30,7 +31,8 @@ public class CookieBar {
     public static final long INFINITE_DURATION = -1;
 
     private Cookie cookieView;
-    private final Activity context;
+    private final Activity activity;
+    private final Context context;
 
     public static Builder build(Activity activity) {
         return new CookieBar.Builder(activity);
@@ -40,8 +42,9 @@ public class CookieBar {
         new CookieBar(activity, null);
     }
 
-    private CookieBar(Activity context, Params params) {
-        this.context = context;
+    private CookieBar(Activity activity, Params params) {
+        this.activity = activity;
+        this.context = activity.getApplicationContext();
         if (params == null) {
             // since params is null, this CookieBar object can only be used to dismiss
             // existing cookies
@@ -55,7 +58,7 @@ public class CookieBar {
 
     private void show() {
         if (cookieView != null) {
-            final ViewGroup decorView = (ViewGroup) context.getWindow().getDecorView();
+            final ViewGroup decorView = (ViewGroup) activity.getWindow().getDecorView();
             final ViewGroup content = decorView.findViewById(android.R.id.content);
             if (cookieView.getParent() == null) {
                 ViewGroup parent = cookieView.getLayoutGravity() == Gravity.BOTTOM ?
@@ -66,7 +69,7 @@ public class CookieBar {
     }
 
     private void dismiss() {
-        final ViewGroup decorView = (ViewGroup) context.getWindow().getDecorView();
+        final ViewGroup decorView = (ViewGroup) activity.getWindow().getDecorView();
         final ViewGroup content = decorView.findViewById(android.R.id.content);
 
         removeFromParent(decorView);
