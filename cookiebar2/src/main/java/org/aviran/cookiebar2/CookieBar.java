@@ -50,7 +50,7 @@ public class CookieBar {
         this.holder = holder;
         this.context = activity.getApplicationContext();
 
-        if (params == null) {
+        if (params == null || context == null) {
             // since params is null, this CookieBar object can only be used to dismiss
             // existing cookies
             dismiss();
@@ -132,14 +132,16 @@ public class CookieBar {
     public static class Builder {
 
         private final Params params = new Params();
-        private final Activity context;
+        private final Activity activty;
+        private final Context context;
         private final Fragment holder;
 
         /**
          * Create a builder for an cookie.
          */
         Builder(Activity activity, Fragment holder) {
-            this.context = activity;
+            this.activty = activity;
+            this.context = activity.getApplicationContext();
             this.holder = holder;
         }
 
@@ -276,7 +278,7 @@ public class CookieBar {
         }
 
         public CookieBar create() {
-            return new CookieBar(context, holder, params);
+            return new CookieBar(activty, holder, params);
         }
 
         public CookieBar show() {
