@@ -10,6 +10,7 @@ import android.support.annotation.ColorRes;
 import android.support.annotation.DrawableRes;
 import android.support.annotation.LayoutRes;
 import android.support.annotation.StringRes;
+import android.support.v4.app.Fragment;
 import android.view.Gravity;
 import android.view.View;
 import android.view.ViewGroup;
@@ -28,23 +29,27 @@ import android.view.ViewGroup;
 public class CookieBar {
     public static final int TOP = Gravity.TOP;
     public static final int BOTTOM = Gravity.BOTTOM;
-    public static final long INFINITE_DURATION = -1;
 
     private Cookie cookieView;
     private final Activity activity;
     private final Context context;
+    private final Fragment holder;
 
     public static Builder build(Activity activity) {
-        return new CookieBar.Builder(activity);
+        return new CookieBar.Builder(activity, null);
     }
+
+    public static Builder build(Fragment holder) {return new CookieBar.Builder(holder.getActivity(), holder); }
 
     public static void dismiss(Activity activity) {
-        new CookieBar(activity, null);
+        new CookieBar(activity, null, null);
     }
 
-    private CookieBar(Activity activity, Params params) {
+    private CookieBar(Activity activity, Fragment holder, Params params) {
         this.activity = activity;
+        this.holder = holder;
         this.context = activity.getApplicationContext();
+
         if (params == null) {
             // since params is null, this CookieBar object can only be used to dismiss
             // existing cookies
@@ -58,12 +63,21 @@ public class CookieBar {
 
     private void show() {
         if (cookieView != null) {
-            final ViewGroup decorView = (ViewGroup) activity.getWindow().getDecorView();
-            final ViewGroup content = decorView.findViewById(android.R.id.content);
-            if (cookieView.getParent() == null) {
-                ViewGroup parent = cookieView.getLayoutGravity() == Gravity.BOTTOM ?
-                        content : decorView;
-                addCookie(parent, cookieView);
+            if (this.holder != null && this.holder.getView() != null) {
+                // Load
+                final ViewGroup content = (ViewGroup) this.holder.getView().getParent();
+                if (cookieView.getParent() == null) {
+                    addCookie(content, cookieView);
+                }
+            } else {
+                final ViewGroup decorView = (ViewGroup) activity.getWindow().getDecorView();
+                final ViewGroup content = decorView.findViewById(android.R.id.content);
+
+                if (cookieView.getParent() == null) {
+                    ViewGroup parent = cookieView.getLayoutGravity() == Gravity.BOTTOM ?
+                            content : decorView;
+                    addCookie(parent, cookieView);
+                }
             }
         }
     }
@@ -98,7 +112,7 @@ public class CookieBar {
         for (int i = 0; i < childCount; i++) {
             View child = parent.getChildAt(i);
             if (child instanceof Cookie) {
-                ((Cookie) child).dismiss(new Cookie.CookieBarDismissListener() {
+                ((Cookie) child).dismiss(new CookieBarDismissListener() {
                     @Override
                     public void onDismiss() {
                         parent.addView(cookie);
@@ -119,12 +133,14 @@ public class CookieBar {
 
         private final Params params = new Params();
         private final Activity context;
+        private final Fragment holder;
 
         /**
          * Create a builder for an cookie.
          */
-        Builder(Activity activity) {
+        Builder(Activity activity, Fragment holder) {
             this.context = activity;
+            this.holder = holder;
         }
 
         public Builder setIcon(@DrawableRes int iconResId) {
@@ -254,8 +270,13 @@ public class CookieBar {
             return this;
         }
 
+        public Builder setOnCookieBarDismiss(CookieBarDismissListener onCookieBarDismiss) {
+            params.onCookieBarDismiss = onCookieBarDismiss;
+            return this;
+        }
+
         public CookieBar create() {
-            return new CookieBar(context, params);
+            return new CookieBar(context, holder, params);
         }
 
         public CookieBar show() {
@@ -263,8 +284,6 @@ public class CookieBar {
             cookie.show();
             return cookie;
         }
-
-
     }
 
     final static class Params {
@@ -287,6 +306,7 @@ public class CookieBar {
         public int animationOutBottom = R.anim.slide_out_to_bottom;
         public CustomViewInitializer viewInitializer;
         public OnActionClickListener onActionClickListener;
+        public CookieBarDismissListener onCookieBarDismiss;
         public AnimatorSet iconAnimator;
     }
 

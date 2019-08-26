@@ -39,7 +39,7 @@ final class Cookie extends LinearLayout implements View.OnTouchListener {
     private int animationOutBottom;
     private boolean isAutoDismissEnabled;
     private boolean isSwipeable;
-
+    CookieBarDismissListener onDismissListener;
 
     public Cookie(@NonNull final Context context) {
         this(context, null);
@@ -126,7 +126,7 @@ final class Cookie extends LinearLayout implements View.OnTouchListener {
         animationOutBottom = params.animationOutBottom;
         isSwipeable = params.enableSwipeToDismiss;
         isAutoDismissEnabled = params.enableAutoDismiss;
-
+        onDismissListener = params.onCookieBarDismiss;
 
         //Icon
         if (params.iconResId != 0) {
@@ -216,14 +216,12 @@ final class Cookie extends LinearLayout implements View.OnTouchListener {
                     return;
                 }
 
-                if (duration > CookieBar.INFINITE_DURATION) {
-                    postDelayed(new Runnable() {
-                        @Override
-                        public void run() {
-                            dismiss();
-                        }
-                    }, duration);
-                }
+                postDelayed(new Runnable() {
+                    @Override
+                    public void run() {
+                        dismiss();
+                    }
+                }, duration);
             }
 
             @Override
@@ -245,6 +243,7 @@ final class Cookie extends LinearLayout implements View.OnTouchListener {
     }
 
     public void dismiss(final CookieBarDismissListener listener) {
+        onDismissListener.onDismiss();
         if (swipedOut) {
             removeFromParent();
             return;
@@ -348,6 +347,8 @@ final class Cookie extends LinearLayout implements View.OnTouchListener {
 
             @Override
             public void onAnimationEnd(Animator animation) {
+                // Execute Dismiss on exit
+                onDismissListener.onDismiss();
                 removeFromParent();
             }
 
@@ -361,9 +362,5 @@ final class Cookie extends LinearLayout implements View.OnTouchListener {
                 // no implementation
             }
         };
-    }
-
-    public interface CookieBarDismissListener {
-        void onDismiss();
     }
 }
