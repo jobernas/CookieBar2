@@ -36,11 +36,17 @@ public class CookieBar {
     private final Fragment holder;
 
     public static Builder build(Activity activity) {
-        return new CookieBar.Builder(activity, null);
+        if (activity != null) {
+            return new CookieBar.Builder(activity, null);
+        }
+        return null;
     }
 
     public static Builder build(Fragment holder) {
-        return new CookieBar.Builder(holder.getActivity(), holder);
+        if (holder != null && holder.getActivity() != null) {
+            return new CookieBar.Builder(holder.getActivity(), holder);
+        }
+        return null;
     }
 
     public static void dismiss(Activity activity) {
@@ -50,11 +56,7 @@ public class CookieBar {
     private CookieBar(Activity activity, Fragment holder, Params params) {
         this.activity = activity;
         this.holder = holder;
-        if (activity != null) {
-            this.context = activity.getApplicationContext();
-        } else {
-            this.context = null;
-        }
+        this.context = activity.getApplicationContext();
 
         if (params == null) {
             // since params is null, this CookieBar object can only be used to dismiss
@@ -147,7 +149,7 @@ public class CookieBar {
          */
         Builder(Activity activity, Fragment holder) {
             this.activity = activity;
-            this.context = activity.getApplicationContext();
+            if (activity != null) { this.context = activity.getApplicationContext(); } else { this.context = null; }
             this.holder = holder;
         }
 
