@@ -3,6 +3,7 @@ package org.aviran.cookiebar2;
 import android.animation.AnimatorInflater;
 import android.animation.AnimatorSet;
 import android.app.Activity;
+import android.content.Context;
 import android.support.annotation.AnimRes;
 import android.support.annotation.AnimatorRes;
 import android.support.annotation.ColorRes;
@@ -30,22 +31,33 @@ public class CookieBar {
     public static final int BOTTOM = Gravity.BOTTOM;
 
     private Cookie cookieView;
-    private final Activity context;
+    private final Activity activity;
+    private final Context context;
     private final Fragment holder;
 
     public static Builder build(Activity activity) {
-        return new CookieBar.Builder(activity, null);
+        if (activity != null) {
+            return new CookieBar.Builder(activity, null);
+        }
+        return null;
     }
 
-    public static Builder build(Fragment holder) {return new CookieBar.Builder(holder.getActivity(), holder); }
+    public static Builder build(Fragment holder) {
+        if (holder != null && holder.getActivity() != null) {
+            return new CookieBar.Builder(holder.getActivity(), holder);
+        }
+        return null;
+    }
 
     public static void dismiss(Activity activity) {
         new CookieBar(activity, null, null);
     }
 
-    private CookieBar(Activity context, Fragment holder, Params params) {
-        this.context = context;
+    private CookieBar(Activity activity, Fragment holder, Params params) {
+        this.activity = activity;
         this.holder = holder;
+        this.context = activity.getApplicationContext();
+
         if (params == null) {
             // since params is null, this CookieBar object can only be used to dismiss
             // existing cookies
@@ -59,7 +71,6 @@ public class CookieBar {
 
     private void show() {
         if (cookieView != null) {
-
             if (this.holder != null && this.holder.getView() != null) {
                 // Load
                 final ViewGroup content = (ViewGroup) this.holder.getView().getParent();
@@ -67,7 +78,7 @@ public class CookieBar {
                     addCookie(content, cookieView);
                 }
             } else {
-                final ViewGroup decorView = (ViewGroup) context.getWindow().getDecorView();
+                final ViewGroup decorView = (ViewGroup) activity.getWindow().getDecorView();
                 final ViewGroup content = decorView.findViewById(android.R.id.content);
 
                 if (cookieView.getParent() == null) {
@@ -80,7 +91,7 @@ public class CookieBar {
     }
 
     private void dismiss() {
-        final ViewGroup decorView = (ViewGroup) context.getWindow().getDecorView();
+        final ViewGroup decorView = (ViewGroup) activity.getWindow().getDecorView();
         final ViewGroup content = decorView.findViewById(android.R.id.content);
 
         removeFromParent(decorView);
@@ -129,14 +140,16 @@ public class CookieBar {
     public static class Builder {
 
         private final Params params = new Params();
-        private final Activity context;
+        private final Activity activity;
+        private final Context context;
         private final Fragment holder;
 
         /**
          * Create a builder for an cookie.
          */
         Builder(Activity activity, Fragment holder) {
-            this.context = activity;
+            this.activity = activity;
+            if (activity != null) { this.context = activity.getApplicationContext(); } else { this.context = null; }
             this.holder = holder;
         }
 
@@ -273,12 +286,17 @@ public class CookieBar {
         }
 
         public CookieBar create() {
-            return new CookieBar(context, holder, params);
+            if (activity != null) {
+                return new CookieBar(activity, holder, params);
+            }
+            return null;
         }
 
         public CookieBar show() {
             final CookieBar cookie = create();
-            cookie.show();
+            if (cookie != null) {
+                cookie.show();
+            }
             return cookie;
         }
     }
