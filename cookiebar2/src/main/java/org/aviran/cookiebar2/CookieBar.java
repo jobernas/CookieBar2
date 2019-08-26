@@ -39,7 +39,15 @@ public class CookieBar {
         return new CookieBar.Builder(activity, null);
     }
 
-    public static Builder build(Fragment holder) {return new CookieBar.Builder(holder.getActivity(), holder); }
+    public static Builder build(Fragment holder) {
+        if (holder != null) {
+            final Activity act = holder.getActivity();
+            if (act != null) {
+                return new CookieBar.Builder(act, holder);
+            }
+        }
+        return new CookieBar.Builder(null, null);
+    }
 
     public static void dismiss(Activity activity) {
         new CookieBar(activity, null, null);
